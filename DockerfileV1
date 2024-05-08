@@ -1,0 +1,14 @@
+# syntax=docker/dockerfile:1
+
+# We usually don't start from scrach.
+# Let's start with java
+FROM eclipse-temurin:17-jdk-jammy
+
+# Create directory for our app.
+RUN mkdir /opt/app
+
+# Copy application
+COPY target/bulldog.jar /opt/app/bulldog.jar
+
+# Define how to run application
+CMD ["java", "-jar", "/opt/app/bulldog.jar"]

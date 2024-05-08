@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:1
+
+# We usually don't start from scratch.
+# Let's start with maven-alpine
+FROM maven:3-eclipse-temurin-17-alpine as build
+
+RUN mkdir /opt/bulldog
+
+COPY src/  /opt/bulldog/src
+COPY pom.xml /opt/bulldog
+
+WORKDIR "/opt/bulldog"
+
+RUN mvn package
+
+# we are starting from fresh image
+FROM eclipse-temurin:17-jre-alpine
+
+# Create directory for our app.
+RUN mkdir /opt/app
+
+# From container we created in top, we copy output
+# artifact to new container. Same as in DockerfileV1
+COPY --from=build /opt/bulldog/target/bulldog.jar /opt/app/bulldog.jar
+
+# Define how to run application
+CMD ["java", "-jar", "/opt/app/bulldog.jar"]
